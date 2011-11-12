@@ -1,0 +1,21 @@
+{
+  "name" : "errlog"
+, "description" : "handles your callback errors for you"
+, "version" : "0.0.1"
+, "author" : "J Chris Anderson <jchris@couchbase.com> (http://jchrisa.net)"
+, "contributors" : []
+, "bugs" :
+  { "mail" : "jchris@couchbase.com"
+  }
+, "directories" : { "lib" : "./lib" }
+, "engines" : { "node" : ">=0.2.0" }
+, "licenses" :
+  [ { "type" : "Apache 2.0"
+    , "url" : "http://www.apache.org/licenses/LICENSE-2.0.html"
+    }
+  ]
+, "main" : "./lib/errlog"
+, "dependencies" : {
+    "colors": "0.5.x"
+}
+}

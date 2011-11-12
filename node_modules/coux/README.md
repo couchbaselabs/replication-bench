@@ -1,0 +1,1 @@
+# Docstate, for stately Couch stuff
