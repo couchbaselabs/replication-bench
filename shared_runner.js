@@ -70,8 +70,8 @@ asyncFold(dbs, function(db, cb) {
         })
     }, function() {
         console.log("replication is running, start the load & the measurement")
-        measure.start(dbs, function() {
-            load.start(dbs);
+        measure.start(dbs, function(notify) {
+            load.start(notify, dbs2);
         })
     });
     
