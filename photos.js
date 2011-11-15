@@ -55,7 +55,6 @@ exports.start = function(notify, dbs) {
 
     function saveThumbnail(db, doc) {
         coux.post(db, doc, function(err, ok) {
-            // console.log("thumb", ok)
             coux.put([db, ok.id, "thumb", {rev : ok.rev}], thumb, function(err, ok) {
                 notify.saved(db, ok.id, ok.rev)
             })
@@ -64,7 +63,6 @@ exports.start = function(notify, dbs) {
 
     function savePhoto(db, doc) {
         coux.post(db, doc, function(err, ok) {
-            // console.log("photo", ok)
             coux.put([db, ok.id, "photo", {rev : ok.rev}], photo, function(err, ok) {
                 notify.saved(db, ok.id, ok.rev)
             })

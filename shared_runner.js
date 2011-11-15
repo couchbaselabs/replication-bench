@@ -13,22 +13,9 @@ var coux = require('coux').coux
     , url = require('url')
     , load = require(__dirname + '/' + LOAD)
     , measure = require(__dirname + '/measure')
+    , jchrisUtils = require(__dirname + '/jchrisUtils')
+    , asyncFold = jchrisUtils.asyncFold
     ;
-
-
-function asyncFold(array, fun, done) {
-    // console.log('asyncFold',array.length, array)
-    var offset = -1
-        , cb = function() {
-            offset++;
-            if (offset < array.length) {
-                fun(array[offset], cb)
-            } else {
-                done();
-            }
-        };
-    cb();
-};
 
 
 // first database is the master
@@ -37,13 +24,15 @@ var dbs = fs.readFileSync(__dirname + "/dbs.txt", "utf8").split(/\n/);
 
 // create databases (first one is master)
 asyncFold(dbs, function(db, cb) {
-    coux.put(db, (function(e, ok) {
-        if (e && e.error != "file_exists") {
-            console.log(e)
+    coux.del(db, function(err, ok) {
+        if (err && err.error != "not_found") {
+            console.log(ere)
         } else {
-            cb()
+            coux.put(db, e(function() {
+                cb()
+            }))
         }
-    }))
+    })
 }, function() {
     // setup replication from devices <-> master
     var master = dbs[0]
@@ -59,18 +48,19 @@ asyncFold(dbs, function(db, cb) {
             continuous : CONTINUOUS,
             source : dbName,
             target : master
-        }, function() {
+        }, e(function() {
             coux.post(replicator, {
                 continuous : CONTINUOUS,
                 source : master,
                 target : dbName
-            }, function() {
+            }, e(function() {
                 cb()
-            });
-        })
+            }));
+        }))
     }, function() {
-        console.log("replication is running, start the load & the measurement")
+        console.log("replication is running, start the measurement")
         measure.start(dbs, function(notify) {
+            console.log("measure is running, start the load")
             load.start(notify, dbs2);
         })
     });
