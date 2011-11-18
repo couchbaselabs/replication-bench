@@ -1,4 +1,6 @@
-var coux = require("coux").coux;
+var coux = require("coux").coux
+, e = require('errlog').e
+;
 
 var MIN_DELAY = 5000; //ms ... max delay is 2x min delay
 
@@ -54,21 +56,21 @@ exports.start = function(notify, dbs) {
     };
 
     function saveThumbnail(db, doc) {
-        coux.post(db, doc, function(err, ok) {
+        coux.post(db, doc, e(function(err, ok) {
             notify.start(db, ok.id);
-            coux.put([db, ok.id, "thumb", {rev : ok.rev}], thumb, function(err, ok) {
+            coux.put([db, ok.id, "thumb", {rev : ok.rev}], thumb, e(function(err, ok) {
                 notify.saved(db, ok.id, ok.rev)
-            })
-        })
+            }))
+        }))
     }
 
     function savePhoto(db, doc) {
-        coux.post(db, doc, function(err, ok) {
+        coux.post(db, doc, e(function(err, ok) {
             notify.start(db, ok.id);
-            coux.put([db, ok.id, "photo", {rev : ok.rev}], photo, function(err, ok) {
+            coux.put([db, ok.id, "photo", {rev : ok.rev}], photo, e(function(err, ok) {
                 notify.saved(db, ok.id, ok.rev)
-            })
-        })
+            }))
+        }))
     }
 
     dbs.forEach(saveLoop);
