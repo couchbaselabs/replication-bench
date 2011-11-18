@@ -3,7 +3,7 @@ exports.asyncFold = function(array, fun, done) {
         , cb = function() {
             offset++;
             if (offset < array.length) {
-                fun(array[offset], cb)
+                fun(array[offset], cb, offset)
             } else {
                 done();
             }

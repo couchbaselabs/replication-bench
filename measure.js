@@ -15,6 +15,7 @@ var coux = require('coux').coux
 var MIN_DEVICES = 10;
 
 function subscribeDb(db, fun) {
+    console.log(db)
     function getChanges(since) {
         coux({url:db + "/_changes?feed=longpoll&since="+since, agent:false}, 
         function(err, changes) {
@@ -29,6 +30,57 @@ function subscribeDb(db, fun) {
     getChanges(0);
 };
 
+exports.multi = function(dbs, masters, ready) {
+    var state = {};
+    
+    function maybeReport(id) {
+        var stats = state[id]
+        , ready_devices = []
+        ;
+        if (stats.saved && stats.cloud) {
+            report(id, stats);
+        }
+    }
+    
+    function report(id, stats) {
+        // report gives id, time on local, time to master, min, avg, max time to devices
+        var reportData = {
+            time_to_local : stats.saved.time - stats.start
+            , time_to_master : stats.cloud.time - stats.start
+        };
+        console.log(id, reportData);
+    }
+    
+    var notify = {
+        start : function(db, id) {
+            state[id] = state[id] || {};
+            state[id].start = new Date();
+        },
+        saved : function(db, id, rev) {
+            // note that this doc was saved to db X
+            var revpos = parseInt(rev.split('-')[0]);
+            state[id] = state[id] || {};
+            state[id].saved = {rev:revpos, time : new Date()};
+            maybeReport(id)
+        },
+        cloud : function(id, rev) {
+            // note that this doc is in master
+            var revpos = parseInt(rev.split('-')[0]);
+            state[id] = state[id] || {};
+            state[id].cloud = {rev:revpos, time : new Date()};
+            maybeReport(id)
+        }
+    };
+    asyncFold(masters, function(db, cb) {
+        subscribeDb(db, function(change) {
+            notify.cloud(change.id, change.changes[0].rev)
+        });
+        cb();
+    }, function() {
+        ready(notify);
+    });
+};
+
 exports.start = function(dbs, ready) {
     var master = dbs[0]
         , dbs2 = dbs.slice(1)
@@ -41,7 +93,6 @@ exports.start = function(dbs, ready) {
         , ready_devices = []
         ;
         if (stats.saved && stats.cloud && stats.devices) {
-
             for (var d in stats.devices) {
                 if (stats.devices[d].rev >= stats.saved.rev) {
                     ready_devices.push(stats.devices[d]);

@@ -1,7 +1,8 @@
 // copyright 2011 Couchbase
 // 
-// how many devices can a single database support for shared replication?
-// w/ option to filter TODO
+// how many databases can a single server support, 
+// where each database is replicating with one client?
+
 var FILTER = false
     , CONTINUOUS = true
     , LOAD = "photos"
@@ -18,12 +19,21 @@ var coux = require('coux').coux
     ;
 
 
-// first database is the master
-var dbs = fs.readFileSync(__dirname + "/shared_dbs.txt", "utf8").split(/\n/);
+// first line is the master server (not db)
+// the other lines are clients - for each client we also create a database on the master
+// it will have the same name as the device db + "cloud"
+var dbs = fs.readFileSync(__dirname + "/multi_dbs.txt", "utf8").split(/\n/);
 
+var master = dbs.shift();
 
-// create databases (first one is master)
-asyncFold(dbs, function(db, cb) {
+var masterDbs = dbs.map(function(db) {
+    var uri = url.parse(db)
+        , dbName = uri.pathname.split('/')[1];
+    return master + dbName + "cloud";
+});
+
+// create databases
+asyncFold(masterDbs.concat(dbs), function(db, cb) {
     coux.del(db, function(err, ok) {
         if (err && err.error != "not_found") {
             console.log(err)
@@ -35,11 +45,9 @@ asyncFold(dbs, function(db, cb) {
     })
 }, function() {
     // setup replication from devices <-> master
-    var master = dbs[0]
-        , dbs2 = dbs.slice(1)
-        ;
+    // replication is triggered on the devices
     
-    asyncFold(dbs2, function(db, cb) {
+    asyncFold(dbs, function(db, cb, i) {
         var rpc = url.parse(db)
             , dbName = rpc.pathname.split('/')[1];
         rpc.pathname = "/_replicate";
@@ -47,21 +55,19 @@ asyncFold(dbs, function(db, cb) {
         coux.post(replicator, {
             continuous : CONTINUOUS,
             source : dbName,
-            target : master
+            target : masterDbs[i]
         }, e(function() {
             coux.post(replicator, {
                 continuous : CONTINUOUS,
-                source : master,
+                source : masterDbs[i],
                 target : dbName
-            }, e(function() {
-                cb()
-            }));
+            }, e(cb));
         }))
     }, function() {
-        console.log("replication is running, start the measurement")
-        measure.start(dbs, function(notify) {
+        console.log("multi replication is running, start the measurement")
+        measure.multi(dbs, masterDbs, function(notify) {
             console.log("measure is running, start the load")
-            load.start(notify, dbs2);
+            load.start(notify, dbs);
         })
     });
     
