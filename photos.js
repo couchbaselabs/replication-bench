@@ -1,6 +1,6 @@
 var coux = require("coux").coux;
 
-var MIN_DELAY = 500; //ms ... max delay is 2x min delay
+var MIN_DELAY = 5000; //ms ... max delay is 2x min delay
 
 var photo_size = 2 * 1024 * 1024,
     photo = [];
@@ -55,6 +55,7 @@ exports.start = function(notify, dbs) {
 
     function saveThumbnail(db, doc) {
         coux.post(db, doc, function(err, ok) {
+            notify.start(db, ok.id);
             coux.put([db, ok.id, "thumb", {rev : ok.rev}], thumb, function(err, ok) {
                 notify.saved(db, ok.id, ok.rev)
             })
@@ -63,6 +64,7 @@ exports.start = function(notify, dbs) {
 
     function savePhoto(db, doc) {
         coux.post(db, doc, function(err, ok) {
+            notify.start(db, ok.id);
             coux.put([db, ok.id, "photo", {rev : ok.rev}], photo, function(err, ok) {
                 notify.saved(db, ok.id, ok.rev)
             })

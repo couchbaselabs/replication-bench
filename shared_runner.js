@@ -26,7 +26,7 @@ var dbs = fs.readFileSync(__dirname + "/dbs.txt", "utf8").split(/\n/);
 asyncFold(dbs, function(db, cb) {
     coux.del(db, function(err, ok) {
         if (err && err.error != "not_found") {
-            console.log(ere)
+            console.log(err)
         } else {
             coux.put(db, e(function() {
                 cb()

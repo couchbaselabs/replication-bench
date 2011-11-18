@@ -34,19 +34,47 @@ exports.start = function(dbs, ready) {
         , dbs2 = dbs.slice(1)
         ;
     var state = {};
+    
     // when the doc is in enough dbs, report
     function maybeReport(id) {
-        var stats = state[id];
+        var stats = state[id]
+        , ready_devices = []
+        ;
         if (stats.saved && stats.cloud && stats.devices) {
-            if (Object.keys(stats.devices).length >= MIN_DEVICES) {
-                console.log(id, stats)                
+
+            for (var d in stats.devices) {
+                if (stats.devices[d].rev >= stats.saved.rev) {
+                    ready_devices.push(stats.devices[d]);
+                }
+            }
+            if (ready_devices.length >= MIN_DEVICES) {
+                report(id, stats, ready_devices);                
             }
         }
     }
-    
+    function report(id, stats, ready_devices) {
+        // report gives id, time on local, time to master, min, avg, max time to devices
+        var device_times = ready_devices.map(function(stat) {
+            return stat.time - stats.start;
+        })
+        , sum = device_times.reduce(function(p, c) {return p + c;},0)
+        , avg = sum / device_times.length
+        , reportData = {
+            time_to_local : stats.saved.time - stats.start
+            , time_to_master : stats.cloud.time - stats.start
+            , min_to_device : Math.min.apply(null, device_times)
+            , avg_to_devices : avg
+            , max_to_devices : Math.max.apply(null, device_times)
+        };
+        console.log(id, reportData);
+    }
     
     
     var notify = {
+        start : function(db, id) {
+            state[id] = state[id] || {};
+            state[id].start = new Date();
+        },
         saved : function(db, id, rev) {
             // note that this doc was saved to db X
             var revpos = parseInt(rev.split('-')[0]);
