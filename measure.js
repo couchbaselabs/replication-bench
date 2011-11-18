@@ -63,6 +63,7 @@ exports.multi = function(dbs, masters, ready) {
             , time_to_master : stats.cloud.time - stats.start
         };
         console.log(id, reportData);
+        delete state[id];
     }
     
     var notify = {
@@ -132,6 +133,7 @@ exports.start = function(dbs, ready) {
             , max_to_devices : Math.max.apply(null, device_times)
         };
         console.log(id, reportData);
+        delete state[id];
     }
     
     
