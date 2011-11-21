@@ -20,3 +20,13 @@ http://localhost:5984/repbench17
 http://localhost:5984/repbench18
 http://localhost:5984/repbench19
 http://localhost:5984/repbench20
+http://localhost:5984/repbench30
+http://localhost:5984/repbench31
+http://localhost:5984/repbench32
+http://localhost:5984/repbench33
+http://localhost:5984/repbench34
+http://localhost:5984/repbench35
+http://localhost:5984/repbench36
+http://localhost:5984/repbench37
+http://localhost:5984/repbench38
+http://localhost:5984/repbench39
