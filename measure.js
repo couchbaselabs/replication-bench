@@ -125,14 +125,19 @@ exports.start = function(dbs, ready) {
         })
         , sum = device_times.reduce(function(p, c) {return p + c;},0)
         , avg = sum / device_times.length
-        , reportData = {
+        , reportData = { _id: id, test_label: process.env.TEST_LABEL,
             time_to_local : stats.saved.time - stats.start
             , time_to_master : stats.cloud.time - stats.start
             , min_to_device : Math.min.apply(null, device_times)
             , avg_to_devices : avg
             , max_to_devices : Math.max.apply(null, device_times)
         };
-        console.log(id, reportData);
+        console.log(reportData);
+        if(process.env.TEST_RESULTS_DATABASE) {
+           coux.post(process.env.TEST_RESULTS_DATABASE, reportData, function(err, ok) { 
+               // fire and forget, ignore success/failure
+              });
+        }
         delete state[id];
     }
     
