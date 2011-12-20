@@ -34,6 +34,10 @@ var coux = require('coux').coux
 
 // first database is the master
 var dbs = fs.readFileSync(__dirname + "/shared_dbs.txt", "utf8").split(/\n/);
+// more gracefully handle new-line at the end of the file
+dbs = dbs.filter(function(val) {
+	return !(val === "" || typeof val == "undefined" || val === null);
+});
 
 
 // create databases (first one is master)
