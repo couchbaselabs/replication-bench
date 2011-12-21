@@ -101,6 +101,7 @@ exports.start = function(dbs, ready) {
         , dbs2 = dbs.slice(1)
         ;
     var state = {};
+    var seq = 0;
     
     // when the doc is in enough dbs, report
     function maybeReport(id) {
@@ -125,7 +126,7 @@ exports.start = function(dbs, ready) {
         })
         , sum = device_times.reduce(function(p, c) {return p + c;},0)
         , avg = sum / device_times.length
-        , reportData = { _id: id, test_label: process.env.TEST_LABEL,
+        , reportData = { _id: id, test_label: process.env.TEST_LABEL, seq: seq++,
             time_to_local : stats.saved.time - stats.start
             , time_to_master : stats.cloud.time - stats.start
             , min_to_device : Math.min.apply(null, device_times)
