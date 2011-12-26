@@ -16,7 +16,7 @@ var coux = require("coux").coux
 , e = require('errlog').e
 ;
 
-var MIN_DELAY = 5000; //ms ... max delay is 2x min delay
+var MIN_DELAY = 5 * 60 * 1000; //ms ... max delay is 2x min delay
 
 var photo_size = 2 * 1024 * 1024,
     photo = [];
