@@ -73,7 +73,6 @@ exports.start = function(notify, dbs) {
         coux.post(db, doc, e(function(err, ok) {
             notify.start(db, ok.id);
             coux.put([db, ok.id, "thumb", {rev : ok.rev}], thumb, e(function(err, ok) {
-                notify.saved(db, ok.id, ok.rev)
             }))
         }))
     }
@@ -82,7 +81,6 @@ exports.start = function(notify, dbs) {
         coux.post(db, doc, e(function(err, ok) {
             notify.start(db, ok.id);
             coux.put([db, ok.id, "photo", {rev : ok.rev}], photo, e(function(err, ok) {
-                notify.saved(db, ok.id, ok.rev)
             }))
         }))
     }
