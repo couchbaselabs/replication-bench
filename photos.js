@@ -23,7 +23,7 @@ var photo_size = 2 * 1024 * 1024,
 for (var j=0; j < photo_size; j++) {
     photo.push("p");
 };
-photo = photo.join('');
+photo = new Buffer(photo.join(''));
 
 
 var thumbnail_size = 200 * 1024,
@@ -31,7 +31,7 @@ var thumbnail_size = 200 * 1024,
 for (var i=0; i < thumbnail_size; i++) {
     thumb.push("t");
 };
-thumb = thumb.join('');
+thumb = new Buffer(thumb.join(''));
 
 function makeDoc() {
     var doc;
