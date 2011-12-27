@@ -79,16 +79,16 @@ exports.start = function(notify, dbs) {
     function saveThumbnail(db, doc) {
         coux.post(db, doc, e(function(err, ok) {
             notify.start(db, ok.id);
-            coux.put([db, ok.id, "thumb", {rev : ok.rev}], thumb, e(function(err, ok) {
-            }))
+            // coux.put([db, ok.id, "thumb", {rev : ok.rev}], thumb, e(function(err, ok) {
+            // }))
         }))
     }
 
     function savePhoto(db, doc) {
         coux.post(db, doc, e(function(err, ok) {
             notify.start(db, ok.id);
-            coux.put([db, ok.id, "photo", {rev : ok.rev}], photo, e(function(err, ok) {
-            }))
+            // coux.put([db, ok.id, "photo", {rev : ok.rev}], photo, e(function(err, ok) {
+            // }))
         }))
     }
 
