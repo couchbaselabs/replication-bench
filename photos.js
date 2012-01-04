@@ -16,7 +16,7 @@ var coux = require("coux").coux
 , e = require('errlog').e
 ;
 
-var MIN_DELAY = 5 * 1000; //ms ... max delay is 2x min delay
+var MIN_DELAY = 5 * 60 * 1000; //ms ... max delay is 2x min delay
 
 var photo_size = 2 * 1024 * 1024,
     photo = [];
@@ -58,7 +58,7 @@ exports.start = function(notify, dbs) {
         if (ranDb[db]) {
             delay = MIN_DELAY + (Math.random() * MIN_DELAY);
         } else {
-            delay = 0;
+            delay = Math.random() * MIN_DELAY;
             ranDb[db] = true;
         }
         setTimeout(function() {
