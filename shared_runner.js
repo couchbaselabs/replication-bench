@@ -39,6 +39,7 @@ dbs = dbs.filter(function(val) {
 	return !(val === "" || typeof val == "undefined" || val === null);
 });
 
+console.log("deleting and creating databases");
 
 // create databases (first one is master)
 asyncFold(dbs, function(db, cb) {
@@ -52,6 +53,8 @@ asyncFold(dbs, function(db, cb) {
         }
     })
 }, function() {
+    console.log("setting up replications");
+
     // setup replication from devices <-> master
     var master = dbs[0]
         , dbs2 = dbs.slice(1)
