@@ -43,6 +43,7 @@ console.log("deleting and creating databases");
 
 // create databases (first one is master)
 asyncFold(dbs, function(db, cb) {
+    console.log("del", db)
     coux.del(db, function(err, ok) {
         if (err && err.error != "not_found") {
             console.log(err)
@@ -84,7 +85,7 @@ asyncFold(dbs, function(db, cb) {
             console.log("measure is running, start the load")
             load.start(notify, dbs2);
         })
-    });
+    }, 10);
     
-});
+}, 5);
 

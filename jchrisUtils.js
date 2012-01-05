@@ -12,14 +12,22 @@
 // See the License for the specific language governing permissions
 // and limitations under the License.
 
-exports.asyncFold = function(array, fun, done) {
-    var offset = -1
-        , cb = function() {
-            offset++;
-            if (offset < array.length) {
-                fun(array[offset], cb, offset)
+exports.asyncFold = function(array, fun, done, fanout) {
+    fanout = fanout || 1;
+    var length = array.length, offset = -1, countdown = length,
+        cb = function() {
+            countdown--;
+            var i, todo = Math.min(fanout, length - (offset+1)); // length - offset = rest
+            if (offset+1 < length) {
+                for (i=0; i < todo; i++) {
+                    offset++
+                    fun(array[offset], cb, offset)
+                };
             } else {
-                done();
+                // call done only after the last time
+                if (countdown < 0) {
+                    done();
+                }
             }
         };
     cb();
