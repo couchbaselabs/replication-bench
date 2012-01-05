@@ -18,7 +18,7 @@
 // w/ option to filter TODO
 var FILTER = false
     , CONTINUOUS = true
-    , LOAD = "photos"
+    , LOAD = process.env.LOAD || "photo"
     ;
 
 var coux = require('coux').coux
@@ -82,7 +82,7 @@ asyncFold(dbs, function(db, cb) {
     }, function() {
         console.log("replication is running, start the measurement")
         measure.start(dbs, function(notify) {
-            console.log("measure is running, start the load")
+            console.log("measure is running, start the load: "+LOAD)
             load.start(notify, dbs2);
         })
     }, 10);
