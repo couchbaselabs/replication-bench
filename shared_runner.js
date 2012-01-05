@@ -18,7 +18,7 @@
 // w/ option to filter TODO
 var FILTER = process.env.FILTER ? true : false
     , CONTINUOUS = true
-    , LOAD = process.env.LOAD || "photo"
+    , LOAD = process.env.LOAD || "photos"
     ;
 
 var coux = require('coux').coux
