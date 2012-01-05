@@ -16,7 +16,7 @@
 // 
 // how many devices can a single database support for shared replication?
 // w/ option to filter TODO
-var FILTER = false
+var FILTER = process.env.FILTER ? true : false
     , CONTINUOUS = true
     , LOAD = process.env.LOAD || "photo"
     ;
@@ -61,31 +61,54 @@ asyncFold(dbs, function(db, cb) {
         , dbs2 = dbs.slice(1)
         ;
     
-    asyncFold(dbs2, function(db, cb) {
-        var rpc = url.parse(db)
-            , dbName = rpc.pathname.split('/')[1];
-        rpc.pathname = "/_replicate";
-        var replicator = url.format(rpc);
-        coux.post(replicator, {
-            continuous : CONTINUOUS,
-            source : dbName,
-            target : master
-        }, e(function() {
+    
+    function triggerRepsAndGo() {
+        asyncFold(dbs2, function(db, cb) {
+            var rpc = url.parse(db)
+                , dbName = rpc.pathname.split('/')[1];
+            rpc.pathname = "/_replicate";
+            var replicator = url.format(rpc);
             coux.post(replicator, {
                 continuous : CONTINUOUS,
-                source : master,
-                target : dbName
+                source : dbName,
+                target : master
             }, e(function() {
-                cb()
-            }));
-        }))
-    }, function() {
-        console.log("replication is running, start the measurement")
-        measure.start(dbs, function(notify) {
-            console.log("measure is running, start the load: "+LOAD)
-            load.start(notify, dbs2);
-        })
-    }, 10);
+                var repdef = {
+                    continuous : CONTINUOUS,
+                    source : master,
+                    target : dbName
+                };
+                if (FILTER) {
+                    repdef.filter = "filter/random";
+                }
+                coux.post(replicator, repdef, e(function() {
+                    cb()
+                }));
+            }))
+        }, function() {
+            console.log("replication is running, start the measurement")
+            measure.start(dbs, function(notify) {
+                console.log("measure is running, start the load: "+LOAD)
+                load.start(notify, dbs2);
+            })
+        }, 10);
+    };
+    
+    
+    if (FILTER) {
+        console.log("setting up filter fun");
+        var filterFun = 'fun(Doc, Req) -> case random:uniform(100) of 1 -> true; _ -> false end end.';
+        var ddoc = {
+            filters : {
+                random : filterFun
+            }
+        };
+        coux.put([master, "_design/filter"], ddoc, e(function(err, ok) {
+            triggerRepsAndGo()
+        }));
+    } else {
+        triggerRepsAndGo()
+    }
     
 }, 5);
 
