@@ -97,7 +97,7 @@ asyncFold(dbs, function(db, cb) {
     
     if (FILTER) {
         console.log("setting up filter fun");
-        var filterFun = 'fun(Doc, Req) -> case random:uniform(100) of 1 -> true; _ -> false end end.';
+        var filterFun = 'fun(Doc, Req) -> case random:uniform(4) of 1 -> true; _ -> false end end.';
         var ddoc = {
             filters : {
                 random : filterFun
