@@ -1,5 +1,10 @@
 # Boot Script
 
+# Amazon Config
+# AMI: ami-97a263fe
+# Region: us-east-1b
+# Type: m1.large
+
 # Install additional packages we require
 sudo yum -y install gcc gcc-c++ openssl-devel sysstat libidn
 
@@ -13,7 +18,7 @@ sudo sh -c "echo '# Increase maximum open file descriptors' >> /etc/sysctl.conf"
 sudo sh -c "echo 'fs.file-max = 65536' >> /etc/sysctl.conf"
 sudo /sbin/sysctl -p
 sudo sh -c "echo '* hard nofile 65536' >> /etc/security/limits.conf"
-sudo sh -c "echo '* soft nofile 16384' >> /etc/security/limits.conf"
+sudo sh -c "echo '* soft nofile 65536' >> /etc/security/limits.conf"
 
 # Add additional parameters to CouchDB startup
 sudo cp /opt/couchbase/bin/couchdb /opt/couchbase/bin/couchdb.orig
