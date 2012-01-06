@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="evently/items/_changes"/>
+	<classpathentry kind="src" path="evently/profile/profileReady/selectors/form"/>
+	<classpathentry kind="src" path="vendor/couchapp/_attachments"/>
+	<classpathentry excluding="signupForm/selectors/form/|loggedIn/|signupForm/|loginForm/|loginForm/selectors/form/" kind="src" path="vendor/couchapp/evently/account"/>
+	<classpathentry kind="src" path="vendor/couchapp/evently/account/loggedIn"/>
+	<classpathentry excluding="selectors/form/" kind="src" path="vendor/couchapp/evently/account/loginForm"/>
+	<classpathentry kind="src" path="vendor/couchapp/evently/account/loginForm/selectors/form"/>
+	<classpathentry excluding="selectors/form/" kind="src" path="vendor/couchapp/evently/account/signupForm"/>
+	<classpathentry kind="src" path="vendor/couchapp/evently/account/signupForm/selectors/form"/>
+	<classpathentry excluding="profileReady/|loggedOut/|noProfile/|noProfile/selectors/form/" kind="src" path="vendor/couchapp/evently/profile"/>
+	<classpathentry kind="src" path="vendor/couchapp/evently/profile/loggedOut"/>
+	<classpathentry excluding="selectors/form/" kind="src" path="vendor/couchapp/evently/profile/noProfile"/>
+	<classpathentry kind="src" path="vendor/couchapp/evently/profile/noProfile/selectors/form"/>
+	<classpathentry kind="src" path="vendor/couchapp/evently/profile/profileReady"/>
+	<classpathentry kind="src" path="vendor/couchapp/lib"/>
+	<classpathentry kind="src" path="views/recent-items"/>
+	<classpathentry kind="con" path="org.eclipse.wst.jsdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="output" path=""/>
+</classpath>

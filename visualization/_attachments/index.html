@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Replication Bench Visualization</title>
+    <link rel="stylesheet" href="style/main.css" type="text/css">
+  </head>
+  <body>
+    <h1>Replication Bench Visualization</h1>
+    <h5>Topology</h5>
+    <ul>
+      <li>1 Driver Server cooridinating devices and measuring results</li>
+      <li>1 Master Server running sync point database</li>
+      <li>6 Device Servers running N device databases</li>
+    </ul>
+    <h5>Workload</h5>
+    <ul>
+      <li>min_delay is 5 minutes</li>
+      <li>Each device initially waits between 0 and min_delay, then creates a photo</li>
+      <li>Subsequently deach device waits between min_delay and 2*min_delay, then creats a photo</li>
+      <li>50% of all photos attached are 200K</li>
+      <li>50% of all photos attached are 2MB</li>
+      <li>Each device performs continuous push replication to sync point</li>
+      <li>Each device performs continuous pull replication from sync point</li>
+    </ul>
+    
+    <hr/>
+    
+    <h3>Summary</h3>
+    <p>This chart summarizes results across several test runs, only varying the number of devices</p>
+    <ul>
+      <li>x-axis is the number of devices</li>
+      <li>y-axis is time (ms)</li>
+      <li>red line is the max time_to_master in the test run</li>
+      <li>green line is the average time_to_master in the test run</li>
+    </ul>
+    <div id="summary" class="chart"></div>
+    
+    <h3>Individual Test Results</h3>
+    <ul>
+      <li>x-axis is sample number (not time series)</li>
+      <li>y-axis is time (ms)</li>
+      <li>blue bar represents time_to_master (the time it took a document to be created on the device, be replicated to the sync point, and then show up on the changes feed followed by the driver)</li>
+    </ul>
+    
+    <h3>50devices_6servers_longer_delay_push_and_pull_cb20_run1</h3>
+    <div id="two" class="chart"></div>
+    <table id="twotable" class="statstable">
+      <tr class="header">
+        <th>Measure</th>
+        <th>min</th>
+        <th>avg</th>
+        <th>max</th>
+      </tr>
+      <tr id="twotablemin"></tr>
+      <tr id="twotableavg"></tr>
+      <tr id="twotablemax"></tr>
+    </table>
+    <br/>
+    
+    <h3>100devices_6servers_longer_delay_push_and_pull_cb20_run1</h3>
+    <div id="three" class="chart"></div>
+    <table id="threetable" class="statstable">
+      <tr class="header">
+        <th>Measure</th>
+        <th>min</th>
+        <th>avg</th>
+        <th>max</th>
+      </tr>
+      <tr id="threetablemin"></tr>
+      <tr id="threetableavg"></tr>
+      <tr id="threetablemax"></tr>
+    </table>
+    <br/>
+    
+    <h3>200devices_6servers_longer_delay_push_and_pull_cb20_run1</h3>
+    <div id="four" class="chart"></div>
+    <table id="fourtable" class="statstable">
+      <tr class="header">
+        <th>Measure</th>
+        <th>min</th>
+        <th>avg</th>
+        <th>max</th>
+      </tr>
+      <tr id="fourtablemin"></tr>
+      <tr id="fourtableavg"></tr>
+      <tr id="fourtablemax"></tr>
+    </table>
+    <br/>
+    
+    <h3>500devices_6servers_longer_delay_push_and_pull_cb20_run1</h3>
+    <div id="five" class="chart"></div>
+    <table id="fivetable" class="statstable">
+      <tr class="header">
+        <th>Measure</th>
+        <th>min</th>
+        <th>avg</th>
+        <th>max</th>
+      </tr>
+      <tr id="fivetablemin"></tr>
+      <tr id="fivetableavg"></tr>
+      <tr id="fivetablemax"></tr>
+    </table>
+    <br/>
+    
+    <h3>750devices_6servers_longer_delay_push_and_pull_cb20_run1</h3>
+    <div id="six" class="chart"></div>
+    <table id="sixtable" class="statstable">
+      <tr class="header">
+        <th>Measure</th>
+        <th>min</th>
+        <th>avg</th>
+        <th>max</th>
+      </tr>
+      <tr id="sixtablemin"></tr>
+      <tr id="sixtableavg"></tr>
+      <tr id="sixtablemax"></tr>
+    </table>
+    <br/>
+    
+    <h3>1000devices_6servers_longer_delay_push_and_pull_cb20_run1</h3>
+    <div id="seven" class="chart"></div>
+    <table id="seventable" class="statstable">
+      <tr class="header">
+        <th>Measure</th>
+        <th>min</th>
+        <th>avg</th>
+        <th>max</th>
+      </tr>
+      <tr id="seventablemin"></tr>
+      <tr id="seventableavg"></tr>
+      <tr id="seventablemax"></tr>
+    </table>
+    <br/>
+    
+    <h3>1500devices_6servers_longer_delay_push_and_pull_cb20_run1</h3>
+    <div id="eight" class="chart"></div>
+    <table id="eighttable" class="statstable">
+      <tr class="header">
+        <th>Measure</th>
+        <th>min</th>
+        <th>avg</th>
+        <th>max</th>
+      </tr>
+      <tr id="eighttablemin"></tr>
+      <tr id="eighttableavg"></tr>
+      <tr id="eighttablemax"></tr>
+    </table>
+    <br/>
+
+  </body>
+  <script src="vendor/couchapp/loader.js"></script>
+  <script src="js/protovis.js"></script>
+  <script type="text/javascript" charset="utf-8">
+    $.couch.app(function(app) {
+      $("#summary").evently("acrosstests", app, {view: "time_to_master_stats_by_num_devices"}); 
+
+      $("#two").evently("singletest", app, "50devices_6servers_longer_delay_push_and_pull_cb20_run1");
+      $("#twotablemin").evently("singletest_table_row", app, {view: "time_to_master_stats_by_label", rowlabel: "time_to_master", testlabel: "50devices_6servers_longer_delay_push_and_pull_cb20_run1"});
+      
+      $("#three").evently("singletest", app, "100devices_6servers_longer_delay_push_and_pull_cb20_run1");
+      $("#threetablemin").evently("singletest_table_row", app, {view: "time_to_master_stats_by_label", rowlabel: "time_to_master", testlabel: "100devices_6servers_longer_delay_push_and_pull_cb20_run1"});
+      
+      $("#four").evently("singletest", app, "200devices_6servers_longer_delay_push_and_pull_cb20_run1");
+      $("#fourtablemin").evently("singletest_table_row", app, {view: "time_to_master_stats_by_label", rowlabel: "time_to_master", testlabel: "200devices_6servers_longer_delay_push_and_pull_cb20_run1"});
+      
+      $("#five").evently("singletest", app, "500devices_6servers_longer_delay_push_and_pull_cb20_run1");
+      $("#fivetablemin").evently("singletest_table_row", app, {view: "time_to_master_stats_by_label", rowlabel: "time_to_master", testlabel: "500devices_6servers_longer_delay_push_and_pull_cb20_run1"});
+      
+      $("#six").evently("singletest", app, "750devices_6servers_longer_delay_push_and_pull_cb20_run1");
+      $("#sixtablemin").evently("singletest_table_row", app, {view: "time_to_master_stats_by_label", rowlabel: "time_to_master", testlabel: "750devices_6servers_longer_delay_push_and_pull_cb20_run1"});
+      
+      $("#seven").evently("singletest", app, "1000devices_6servers_longer_delay_push_and_pull_cb20_run1");
+      $("#seventablemin").evently("singletest_table_row", app, {view: "time_to_master_stats_by_label", rowlabel: "time_to_master", testlabel: "1000devices_6servers_longer_delay_push_and_pull_cb20_run1"});
+      
+      $("#eight").evently("singletest", app, "1500devices_6servers_longer_delay_push_and_pull_cb20_run1");
+      $("#eighttablemin").evently("singletest_table_row", app, {view: "time_to_master_stats_by_label", rowlabel: "time_to_master", testlabel: "1500devices_6servers_longer_delay_push_and_pull_cb20_run1"});
+      
+    });
+  </script>
+</html>
