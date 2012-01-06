@@ -99,10 +99,16 @@ asyncFold(dbs, function(db, cb) {
         console.log("setting up filter fun");
         var filterFun = 'fun(Doc, Req) -> case random:uniform(4) of 1 -> true; _ -> false end end.';
         var ddoc = {
+            language: "erlang",
             filters : {
                 random : filterFun
             }
         };
+        // var config = url.parse(master)
+        //     , dbName = config.pathname.split('/')[1];
+        // config.pathname = "/_config/native_query_servers/erlang";
+        // config = url.format(config);
+        // coux.put(config,'{couch_native_process, start_link, []}')
         coux.put([master, "_design/filter"], ddoc, e(function(err, ok) {
             triggerRepsAndGo()
         }));
