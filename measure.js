@@ -120,6 +120,7 @@ exports.start = function(dbs, ready) {
             , seq: seq++
             , time_to_master : stats.cloud.time - stats.start
             , start : stats.start.getTime()
+            , device_delta : stats.device_time - stats.start.getTime()
             , device_time : stats.device_time
         };
         console.log(reportData);
@@ -130,7 +131,6 @@ exports.start = function(dbs, ready) {
         }
         delete state[id];
     }
-    
     
     var notify = {
         start : function(db, id) {
@@ -154,6 +154,7 @@ exports.start = function(dbs, ready) {
                         state[id].device_time = time;
                     } else {
                         doc.device_time = time;
+                        doc.device_delta = doc.start - doc.device_time;
                         coux.post(process.env.TEST_RESULTS_DATABASE, doc, e(function() {}));
                     }
                 });
