@@ -21,7 +21,7 @@
 // need to track each doc & rev....
 
 var coux = require('coux').coux
-, follow = require('follow')
+, e = require('errlog').e
 , jchrisUtils = require(__dirname + '/jchrisUtils')
 , asyncFold = jchrisUtils.asyncFold
 ;
@@ -119,6 +119,8 @@ exports.start = function(dbs, ready) {
             , test_label: process.env.TEST_LABEL
             , seq: seq++
             , time_to_master : stats.cloud.time - stats.start
+            , start : stats.start.getTime()
+            , device_time : stats.device_time
         };
         console.log(reportData);
         if(process.env.TEST_RESULTS_DATABASE) {
@@ -141,10 +143,35 @@ exports.start = function(dbs, ready) {
             state[id] = state[id] || {};
             state[id].cloud = {rev:revpos, time : new Date()};
             maybeReport(id)
+        },
+        device : function(id) {
+            var time = new Date().getTime();
+            console.log("device "+id)
+            if(process.env.TEST_RESULTS_DATABASE) {
+                coux([process.env.TEST_RESULTS_DATABASE, id], function(err, doc) { 
+                    if (err && err.error == 'not_found') {
+                        state[id] = state[id] || {};
+                        state[id].device_time = time;
+                    } else {
+                        doc.device_time = time;
+                        coux.post(process.env.TEST_RESULTS_DATABASE, doc, e(function() {}));
+                    }
+                });
+            }
         }
     };
     subscribeDb(master, function(change) {
         notify.cloud(change.id, change.changes[0].rev)
     })
-    ready(notify);
+    
+    asyncFold(dbs2, function(db, cb) {
+        if (Math.random() < 0.1) {
+            subscribeDb(db, function(change) {
+                notify.device(change.id)
+            })
+        }
+        cb()
+    }, function() {
+        ready(notify);
+    });
 };
