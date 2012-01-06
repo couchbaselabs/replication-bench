@@ -17,9 +17,8 @@
 // how many databases can a single server support, 
 // where each database is replicating with one client?
 
-var FILTER = false
-    , CONTINUOUS = true
-    , LOAD = "photos"
+var CONTINUOUS = true
+    , LOAD = process.env.LOAD || "photos"
     ;
 
 var coux = require('coux').coux
