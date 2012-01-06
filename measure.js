@@ -154,7 +154,7 @@ exports.start = function(dbs, ready) {
                         state[id].device_time = time;
                     } else {
                         doc.device_time = time;
-                        doc.device_delta = doc.start - doc.device_time;
+                        doc.device_delta = doc.device_time - doc.start;
                         coux.post(process.env.TEST_RESULTS_DATABASE, doc, e(function() {}));
                     }
                 });
