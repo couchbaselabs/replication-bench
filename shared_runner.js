@@ -80,6 +80,7 @@ asyncFold(dbs, function(db, cb) {
                 };
                 if (FILTER) {
                     repdef.filter = "filter/random";
+                    repdef.query_params = {rand:Math.round(Math.random() * 100).toString()};
                 }
                 coux.post(replicator, repdef, e(function() {
                     cb()
@@ -97,13 +98,13 @@ asyncFold(dbs, function(db, cb) {
     
     if (FILTER) {
         console.log("setting up filter fun");
-        var filterFun = 'fun(Doc, Req) -> case random:uniform(4) of 1 -> true; _ -> false end end.';
+        var filterFun = 'fun(Doc, Req) -> GetFrom = fun(Key, {Plist}) -> proplists:get_value(Key, Plist, null) end, Rand = GetFrom(<<"rand">>, GetFrom(<<"query">>, Req)), case GetFrom(<<"rand">>, Doc) of Rand -> true; _ -> false end end.';
         var ddoc = {
             language: "erlang",
-            filters : {
+            filters : {    
                 random : filterFun
             }
-        };
+        }  ;
         // var config = url.parse(master)
         //     , dbName = config.pathname.split('/')[1];
         // config.pathname = "/_config/native_query_servers/erlang";

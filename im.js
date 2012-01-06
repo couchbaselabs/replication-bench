@@ -25,12 +25,14 @@ function makeDoc() {
     if (Math.random() > 0.5) {
         doc = {
             type : "im",
+            rand : Math.round(Math.random() * 100).toString(),
             author : "jchris",
             message : "I put a Couch in your Couch so you can rest while you REST"
         }
     } else {
         doc = {
             type : "im",
+            rand : Math.round(Math.random() * 100).toString(),
             author : "marty",
             message : "we don't need simulators"
         }

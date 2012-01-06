@@ -38,12 +38,14 @@ function makeDoc() {
     if (Math.random() > 0.5) {
         doc = {
             type : "photo",
+            rand : Math.round(Math.random() * 100).toString(),
             owner : "damien",
             tags : ["hiking","vacation"]
         }
     } else {
         doc = {
             type : "thumbnail",
+            rand : Math.round(Math.random() * 100).toString(),
             owner : "yas",
             tags : ["concert"]
         }
