@@ -37,6 +37,8 @@ sleep 5
 # Restart CouchDB to ensure all changes take effect
 sudo /etc/init.d/couchbase-server restart
 
+# below only needed on the benchmark driver box
+
 # Add Webtatic repo and install git
 sudo rpm -Uvh http://repo.webtatic.com/yum/centos/5/latest.rpm
 sudo yum -y install --enablerepo=webtatic git-core
