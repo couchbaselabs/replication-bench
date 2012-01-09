@@ -16,7 +16,7 @@ var coux = require("coux").coux
 , e = require('errlog').e
 ;
 
-var MIN_DELAY = 30 * 1000; //ms ... max delay is 2x min delay
+var MIN_DELAY = process.env.MIN_DELAY || 30 * 1000; //ms ... max delay is 2x min delay
 
 
 
