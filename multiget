@@ -1,13 +1,41 @@
 #!/usr/bin/env node
 
 var argv = require('optimist').argv,
+    stream = require('stream'),
     request = require('request');
 
 var url = argv['_'][0],
-    concurrency = argv['c'];
+    concurrency = argv['c'],
+    array = [];
 
 for (var i=0; i < concurrency; i++) {
-    request(url, function(err, resp) {
-        console.log(resp.body)
-    })
-};
+    array.push(i)
+}
+
+array.forEach(function(n) {
+    var mypulldata = new stream.Stream();
+    mypulldata.writable = true
+    mypulldata.write = function () {
+        console.log(n,"chunk")
+    }
+    mypulldata.end = function () {
+        console.log(n,"end")
+    };
+    mypulldata.on('error',function (error) {
+        console.log(n,"error", error)
+    });
+    var req = request({url:url, agent:false})
+    req.pipe(mypulldata);
+    req.on('error',function (error) {
+        console.log(n,"error", error)
+    });
+    console.log(n,'started')
+});
+
+
+
+
+
+
+
+
