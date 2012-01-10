@@ -152,7 +152,7 @@ exports.start = function(dbs, ready) {
                     if (err && err.error == 'not_found') {
                         state[id] = state[id] || {};
                         state[id].device_time = time;
-                    } else {
+                    } else if (!err) {
                         doc.device_time = time;
                         doc.device_delta = doc.device_time - doc.start;
                         coux.post(process.env.TEST_RESULTS_DATABASE, doc, e(function() {}));
