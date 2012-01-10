@@ -16,7 +16,8 @@ array.forEach(function(n) {
     var mypulldata = new stream.Stream();
     mypulldata.writable = true
     mypulldata.write = function () {
-        console.log(n,"chunk")
+        // console.log(n,"chunk")
+        process.stdout.write('.')
     }
     mypulldata.end = function () {
         console.log(n,"end")

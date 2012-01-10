@@ -1,0 +1,37 @@
+#!/usr/bin/env node
+
+var argv = require('optimist').argv,
+    stream = require('stream'),
+    coux = require('coux').coux;
+
+var url = argv['_'][0],
+  concurrency = argv['c'],
+  delay = parseInt(argv['d']) || 0,
+  array = [],
+  doc = {"foo":"bar"};
+
+for (var i=0; i < concurrency; i++) {
+  array.push(i)
+}
+
+function postDoc(n) {
+    return function(cb) {
+        console.log(n, 'post')
+        coux.post({url:url, agent:false}, doc, function(err, ok) {
+            if (!err) {
+                console.log(n,'ok')
+                cb();
+            } else {
+                console.log(n,'error', err)
+            }
+        })
+    };
+};
+
+array.forEach(function(n) {
+    var fun = postDoc(n),
+        funcall = function() {
+            fun(funcall)
+        };
+    fun(funcall);
+});
