@@ -155,7 +155,7 @@ exports.start = function(dbs, ready) {
                     } else if (!err) {
                         doc.device_time = time;
                         doc.device_delta = doc.device_time - doc.start;
-                        coux.post(process.env.TEST_RESULTS_DATABASE, doc, e(function() {}));
+                        coux.post(process.env.TEST_RESULTS_DATABASE, doc, function() {});
                     }
                 });
             }
