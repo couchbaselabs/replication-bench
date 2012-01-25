@@ -1,10 +1,24 @@
 #!/usr/bin/env node
 
-var argv = require('optimist').argv,
+var fs = require('fs'),
+    argv = require('optimist').default('p', 0).argv,
     util  = require('util'),
     spawn = require('child_process').spawn,
-    ps    = spawn('ps', ['-p', argv['_'][0], '-o', 'pcpu=']),
     request = require('request');
+    
+    
+function lookup_couchdb_pid() {
+  return fs.readFileSync('/opt/couchbase/var/run/couchdb/couchdb.pid', 'utf8');
+}
+
+
+var pid = argv.p;
+if(pid === 0) { 
+  pid = lookup_couchdb_pid();
+}
+console.log('pid is ' + pid);
+    
+var ps = spawn('ps', ['-p', pid, '-o', 'pcpu=']);
 
 ps.stdout.on('data', function (data) {
   var dataString = '' + data;
