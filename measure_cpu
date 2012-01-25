@@ -36,12 +36,15 @@ setInterval(function() {
   if(last_time != 0)  {
     var time_diff = (this_time - last_time);
     var clock_diff = (this_time_clock.getTime() - last_time_clock.getTime()); 
-    var pcpu = (time_diff * 10) / clock_diff;
-    console.log('time diff is '  + time_diff);
-    console.log('clock diff is ' + clock_diff);
-    console.log('%cpu is ' + pcpu);
+    //cpu time is measured in jiffies (1/100 second most arch)
+    var pcpu = (time_diff * 10) / clock_diff * 100;
+     //now see how many changes listeners are running
+    request({url:'http://localhost:5984/_stats', json:true}, function (error, response, body) {
+      console.log('cpu: ' + pcpu.toFixed(1) + ' changes count: ' + body.httpd.clients_requesting_changes.current);
+    });
   }
   last_time = this_time;
+  last_time_clock = this_time_clock;
 }, 5 * 1000);
     
 //var ps = spawn('ps', ['-p', pid, '-o', 'pcpu=']);
@@ -54,4 +57,3 @@ setInterval(function() {
 //    console.log('current changes listener count: ' + body.httpd.clients_requesting_changes.current);
 //  });
 //});
-
