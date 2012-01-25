@@ -71,7 +71,7 @@ setInterval(function() {
     var pcpu = (time_diff * 10) / clock_diff * 100;
      //now see how many changes listeners are running
     request({url:'http://localhost:5984/_stats', json:true}, function (error, response, body) {
-      console.log('cpu: ' + pcpu.toFixed(1) + ' changes count: ' + body.httpd.clients_requesting_changes.current + ' avg time: ' + avgTime);
+      console.log('cpu: ' + pcpu.toFixed(1) + ' changes count: ' + body.httpd.clients_requesting_changes.current + ' avg time: ' + avgTime.toFixed(1));
     });
   }
   last_time = this_time;
