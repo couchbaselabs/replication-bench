@@ -7,8 +7,7 @@ var argv = require('optimist').argv,
 var url = argv['_'][0],
   concurrency = argv['c'],
   delay = parseInt(argv['d']) || 0,
-  array = [],
-  doc = {"foo":"bar"};
+  array = [];
 
 for (var i=0; i < concurrency; i++) {
   array.push(i)
@@ -17,6 +16,8 @@ for (var i=0; i < concurrency; i++) {
 function postDoc(n) {
     return function(cb) {
         console.log(n, 'post')
+        var doc =  {"foo":"bar"};
+        doc.created = new Date().getTime();
         coux.post({url:url, agent:false}, doc, function(err, ok) {
             if (!err) {
                 console.log(n,'ok')
