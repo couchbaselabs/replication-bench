@@ -4,8 +4,40 @@ var fs = require('fs'),
     argv = require('optimist').default('p', 0).argv,
     util  = require('util'),
     spawn = require('child_process').spawn,
-    request = require('request');
+    request = require('request'),
+    follow = require('follow');
     
+
+//set up a changes listener
+var db = 'http://127.0.0.1:5984/micro';
+var diffTimes = new Array();
+var samplesToAverage = 15;
+var maxTime = 0;
+var avgTime = 0;
+
+follow({db:db, include_docs:true, since:"now"}, function(error, change) {
+      if(!error) {
+        //console.log("Change " + change.seq + " has " + Object.keys(change.doc).length + " fields");
+        //console.log("Change doc is: " + change.doc);
+        var ctime = (new Date()).getTime();
+        var diff = ctime - change.doc.created;
+        if(diff > maxTime) {
+          maxTime = diff;
+        }
+        //console.log("diff is " + diff);
+        diffTimes.push(diff);
+        if(diffTimes.length > samplesToAverage) {
+            diffTimes.shift();
+        }
+        var timeSum = diffTimes.reduce(function(n,m){return n+m;}, 0);
+        avgTime = timeSum/diffTimes.length;
+        //console.log("updated average is " + avgTime);
+        //console.log("diffTimes has " + diffTimes.length + " elements");
+      }
+});
+
+
+
     
 function lookup_couchdb_pid() {
   return fs.readFileSync('/opt/couchbase/var/run/couchdb/couchdb.pid', 'utf8');
@@ -15,7 +47,6 @@ function get_process_time() {
   var proc_info = fs.readFileSync("/proc/" + pid + "/stat", "utf8").split(/ /);
   return parseInt(proc_info[13]) + parseInt(proc_info[14]);
 }
-
 
 
 var pid = argv.p;
@@ -40,20 +71,10 @@ setInterval(function() {
     var pcpu = (time_diff * 10) / clock_diff * 100;
      //now see how many changes listeners are running
     request({url:'http://localhost:5984/_stats', json:true}, function (error, response, body) {
-      console.log('cpu: ' + pcpu.toFixed(1) + ' changes count: ' + body.httpd.clients_requesting_changes.current);
+      console.log('cpu: ' + pcpu.toFixed(1) + ' changes count: ' + body.httpd.clients_requesting_changes.current + ' avg time: ' + avgTime);
     });
   }
   last_time = this_time;
   last_time_clock = this_time_clock;
 }, 5 * 1000);
-    
-//var ps = spawn('ps', ['-p', pid, '-o', 'pcpu=']);
 
-//ps.stdout.on('data', function (data) {
-//  var dataString = '' + data;
-//  console.log('cpu load: "' + dataString.trim() + '"');
-  //now see how many changes listeners are running
-//  request({url:'http://localhost:5984/_stats', json:true}, function (error, response, body) {
-//    console.log('current changes listener count: ' + body.httpd.clients_requesting_changes.current);
-//  });
-//});
