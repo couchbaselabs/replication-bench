@@ -11,13 +11,13 @@ var url = argv['_'][0],
     
     
 function start_changes_listener(n) {
-    request({url:url, json:true}, function (error, response, body) {
+    request({url:url, json:true, agent:false}, function (error, response, body) {
         if (!error && response.statusCode == 200) {
             //console.log('database update_seq is ' + body.update_seq);
             //now launch a changes listener
             var changes_url = url + '/_changes?feed=continuous&since=' + body.update_seq + '&heartbeat=' + heartbeat;
             console.log('starting changes lister on ' + changes_url);
-            var req = request(changes_url);
+            var req = request({url:changes_url, agent:false});
             req.on('error', function (error) {
                 console.log("error following changes feed", error)
             });
