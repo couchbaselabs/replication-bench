@@ -1,0 +1,17 @@
+#!/usr/bin/env node
+
+var argv = require('optimist').argv,
+    util  = require('util'),
+    spawn = require('child_process').spawn,
+    ps    = spawn('ps', ['-p', argv['_'][0], '-o', 'pcpu=']),
+    request = require('request');
+
+ps.stdout.on('data', function (data) {
+  var dataString = '' + data;
+  console.log('cpu load: "' + dataString.trim() + '"');
+  //now see how many changes listeners are running
+  request({url:'http://localhost:5984/_stats', json:true}, function (error, response, body) {
+    console.log('current changes listener count: ' + body.httpd.clients_requesting_changes.current);
+  });
+});
+
