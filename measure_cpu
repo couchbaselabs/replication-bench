@@ -11,21 +11,47 @@ function lookup_couchdb_pid() {
   return fs.readFileSync('/opt/couchbase/var/run/couchdb/couchdb.pid', 'utf8');
 }
 
+function get_process_time() {
+  var proc_info = fs.readFileSync("/proc/" + pid + "/stat", "utf8").split(/ /);
+  return parseInt(proc_info[13]) + parseInt(proc_info[14]);
+}
+
+
 
 var pid = argv.p;
 if(pid === 0) { 
   pid = lookup_couchdb_pid();
 }
 console.log('pid is ' + pid);
-    
-var ps = spawn('ps', ['-p', pid, '-o', 'pcpu=']);
 
-ps.stdout.on('data', function (data) {
-  var dataString = '' + data;
-  console.log('cpu load: "' + dataString.trim() + '"');
+//var proc_info = fs.readFileSync("/proc/" + pid + "/stat", "utf8").split(/ /);
+//console.log(parseInt(proc_info[13]) + parseInt(proc_info[14]));
+
+var last_time = 0;
+var last_time_clock = new Date();
+
+setInterval(function() {
+  var this_time = get_process_time();
+  var this_time_clock = new Date();
+  if(last_time != 0)  {
+    var time_diff = (this_time - last_time);
+    var clock_diff = (this_time_clock.getTime() - last_time_clock.getTime()); 
+    var pcpu = (time_diff * 10) / clock_diff;
+    console.log('time diff is '  + time_diff);
+    console.log('clock diff is ' + clock_diff);
+    console.log('%cpu is ' + pcpu);
+  }
+  last_time = this_time;
+}, 5 * 1000);
+    
+//var ps = spawn('ps', ['-p', pid, '-o', 'pcpu=']);
+
+//ps.stdout.on('data', function (data) {
+//  var dataString = '' + data;
+//  console.log('cpu load: "' + dataString.trim() + '"');
   //now see how many changes listeners are running
-  request({url:'http://localhost:5984/_stats', json:true}, function (error, response, body) {
-    console.log('current changes listener count: ' + body.httpd.clients_requesting_changes.current);
-  });
-});
+//  request({url:'http://localhost:5984/_stats', json:true}, function (error, response, body) {
+//    console.log('current changes listener count: ' + body.httpd.clients_requesting_changes.current);
+//  });
+//});
 
