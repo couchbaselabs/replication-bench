@@ -20,7 +20,7 @@ function postDoc(n) {
         coux.post({url:url, agent:false}, doc, function(err, ok) {
             if (!err) {
                 console.log(n,'ok')
-                cb();
+                setTimeout(function() {cb();},delay);
             } else {
                 console.log(n,'error', err)
             }
