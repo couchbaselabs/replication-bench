@@ -1,0 +1,36 @@
+#!/usr/bin/env node
+
+var argv = require('optimist').argv,
+    request = require('request'),
+    fs = require('fs');
+    
+    
+var url = argv['_'][0],
+    concurrency = argv['c'] || 1,
+    heartbeat = argv['h'] || 10000;
+    
+    
+function start_changes_listener(n) {
+    request({url:url, json:true}, function (error, response, body) {
+        if (!error && response.statusCode == 200) {
+            //console.log('database update_seq is ' + body.update_seq);
+            //now launch a changes listener
+            var changes_url = url + '/_changes?feed=continuous&since=' + body.update_seq + '&heartbeat=' + heartbeat;
+            console.log('starting changes lister on ' + changes_url);
+            var req = request(changes_url);
+            req.on('error', function (error) {
+                console.log("error following changes feed", error)
+            });
+            var outstream = req.pipe(fs.createWriteStream('/dev/null'));
+            outstream.on('close', function () {
+                console.log("changes feed closed ", n);
+            });
+        } else {
+            console.log('error accessing database to determine update_seq');
+        }
+    });
+}
+    
+for (var i=0; i < concurrency; i++) {
+    start_changes_listener(i);
+}
