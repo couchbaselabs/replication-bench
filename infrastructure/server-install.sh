@@ -6,7 +6,7 @@
 # Type: m1.large
 
 # Install additional packages we require
-sudo yum -y install gcc gcc-c++ openssl-devel sysstat libidn
+sudo yum -y install gcc gcc-c++ openssl-devel sysstat libidn ntp
 
 # Get and Install Couchbase Single Server
 wget http://files.couchbase.org/developer-previews/couchbase-single-server-2.0.0-dev-preview/couchbase-single-server-community_x86_64_2.0.0-dev-preview-5.rpm
