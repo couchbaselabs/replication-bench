@@ -14,6 +14,7 @@ var diffTimes = new Array();
 var samplesToAverage = 15;
 var maxTime = 0;
 var avgTime = 0;
+var reportDB = argv.r;
 
 follow({db:db, include_docs:true, since:"now"}, function(error, change) {
       if(!error) {
@@ -71,7 +72,19 @@ setInterval(function() {
     var pcpu = (time_diff * 10) / clock_diff * 100;
      //now see how many changes listeners are running
     request({url:'http://localhost:5984/_stats', json:true}, function (error, response, body) {
-      console.log('cpu: ' + pcpu.toFixed(1) + ' changes count: ' + body.httpd.clients_requesting_changes.current + ' avg time: ' + avgTime.toFixed(1));
+      var reportData = {
+        created: this_time_clock.getTime(),
+        cpu: pcpu.toFixed(1),
+        changes_listeners:body.httpd.clients_requesting_changes.current,
+        avg_delay: avgTime.toFixed(1),
+        max_delay: maxTime
+      };
+      console.log(reportData);
+      if(reportDB) {
+        coux.post(reportDB, reportData, function(err, ok) {
+               // fire and forget, ignore success/failure
+        });
+      }
     });
   }
   last_time = this_time;
