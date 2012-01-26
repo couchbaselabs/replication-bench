@@ -75,9 +75,9 @@ setInterval(function() {
     request({url:'http://localhost:5984/_stats', json:true}, function (error, response, body) {
       var reportData = {
         created: this_time_clock.getTime(),
-        cpu: pcpu.toFixed(1),
+        cpu: parseFloat(pcpu.toFixed(1)),
         changes_listeners:body.httpd.clients_requesting_changes.current,
-        avg_delay: avgTime.toFixed(1),
+        avg_delay: parseFloat(avgTime.toFixed(1)),
         max_delay: maxTime
       };
       console.log(reportData);
