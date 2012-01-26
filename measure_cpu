@@ -5,7 +5,8 @@ var fs = require('fs'),
     util  = require('util'),
     spawn = require('child_process').spawn,
     request = require('request'),
-    follow = require('follow');
+    follow = require('follow'),
+    coux = require('coux');
     
 
 //set up a changes listener
